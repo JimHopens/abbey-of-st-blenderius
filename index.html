@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Аббатство Святого Блендерия — Секретные архивы (1243–2026)</title>
+    <meta name="description" content="Интерактивный трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекреченные архивы Аббатства Святого Блендерия." />
+    
+    <!-- OpenGraph / Social preview -->
+    <meta property="og:title" content="Аббатство Святого Блендерия — Секретные архивы" />
+    <meta property="og:description" content="Интерактивный аудиовизуальный кодекс в стиле Because Recollection: алхимия смузи, хурмовая гипотеза и посвящение в Великие Магистры." />
+    <meta property="og:image" content="/monk_persimmon.jpg" />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/jpeg" href="/persimmon_seal.jpg" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Fullscreen Audiovisual Canvas -->
+      <canvas id="stage-canvas"></canvas>
+
+      <!-- TOP HUD -->
+      <header class="hud-top">
+        <div class="brand-section" id="btn-brand-home" title="Вернуться к Прологу">
+          <img src="/persimmon_seal.jpg" alt="Abbey Seal" class="seal-icon" />
+          <div class="brand-text">
+            <h1>Sanctus Blenderius</h1>
+            <p>ARCHIVUM SECRETUM • MCCXLIII</p>
+          </div>
+        </div>
+
+        <div class="center-tracker">
+          <span class="track-index-badge" id="hud-chapter-badge">TRACK 00 // PROLOGUS</span>
+          <h2 class="track-headline" id="hud-chapter-title">Врата Аббатства Святого Блендерия</h2>
+          <span class="track-latin-subtitle" id="hud-chapter-subtitle">Codex Blenderius — Introductio</span>
+        </div>
+
+        <div class="top-actions">
+          <button class="sound-toggle-btn" id="btn-sound-toggle" title="Включить / Выключить звук [M]">
+            <div class="equalizer-bars" id="eq-bars">
+              <span class="eq-bar" style="height: 6px;"></span>
+              <span class="eq-bar" style="height: 10px;"></span>
+              <span class="eq-bar" style="height: 4px;"></span>
+              <span class="eq-bar" style="height: 12px;"></span>
+              <span class="eq-bar" style="height: 8px;"></span>
+              <span class="eq-bar" style="height: 11px;"></span>
+              <span class="eq-bar" style="height: 5px;"></span>
+              <span class="eq-bar" style="height: 9px;"></span>
+            </div>
+            <span id="sound-label">SOUND: ON</span>
+          </button>
+
+          <div class="declassified-tag">
+            <span class="blinking-dot"></span>
+            <span>DECLASSIFIED 10/2026</span>
+          </div>
+
+          <button class="manuscript-open-btn" id="btn-open-drawer">
+            ЧИТАТЬ ТРАКТАТ
+          </button>
+        </div>
+      </header>
+
+      <!-- FLOATING INTERACTIVE ACTION HINT -->
+      <div class="interactive-prompt-pill" id="action-prompt">
+        <span class="prompt-icon">✦</span>
+        <span class="prompt-text" id="action-prompt-text">ВРАЩАЙТЕ И ЦАРАПАЙТЕ ДИСК / НАЖМИТЕ ДЛЯ СТАРТА</span>
+      </div>
+
+      <!-- CHAPTER 7: INQUISITION DIAGNOSTIC PANEL MODAL -->
+      <div class="inquisition-panel-modal" id="inquisition-modal" style="display: none;">
+        <div class="inquisition-header">
+          <h3>INDEX PERVERSIONIS FRUCTUOSAE (1380 г.)</h3>
+          <p>Официальная инквизиционная шкала выявления тайных адептов смузи</p>
+        </div>
+
+        <div class="diagnostic-checklist" id="diagnostic-checklist-container">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <div class="score-gauge-summary">
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--parchment-dim); margin-bottom: 4px;">
+              БАЛЛЫ ПОДОЗРИТЕЛЬНОСТИ:
+            </div>
+            <div class="total-score-badge" id="total-score-value">85 / 260</div>
+          </div>
+          <div class="inquisitor-stamp-box" id="inquisitor-stamp-container">
+            <div class="wax-verdict-stamp">HAERETICUS DETECTUS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAPTER 8: INVESTITURE DIPLOMA MODAL -->
+      <div class="diploma-modal" id="diploma-modal" style="display: none;">
+        <div class="diploma-header">
+          <h2>ВЫСОЧАЙШАЯ ГРАМОТА ИНВЕСТИТУРЫ</h2>
+          <h4>Консилиум древних алхимиков и ордена Фрутарианцев</h4>
+        </div>
+
+        <div class="diploma-body">
+          <p>
+            «Сим вердиктом подтверждается, что носитель сего документа преодолел рубеж 100 баллов плодового безумия и торжественно возводится в сан 
+            <strong>Великого Магистра Ордена Спелой Хурмы</strong>».
+          </p>
+
+          <form class="investiture-form" id="investiture-form" onsubmit="event.preventDefault();">
+            <input 
+              type="text" 
+              class="investiture-input" 
+              id="magister-name-input" 
+              placeholder="Введите ваше имя или прозвище..." 
+              value="Брат Блендерий" 
+            />
+            <select class="investiture-select" id="magister-title-select">
+              <option value="Великий магистр Спелой Хурмы">Великий магистр Спелой Хурмы</option>
+              <option value="Хранитель Анальной Сокровищницы">Хранитель Анальной Сокровищницы</option>
+              <option value="Архимандрит Пустой Чаши (Vacuum Blenderus)">Архимандрит Пустой Чаши (Vacuum Blenderus)</option>
+              <option value="Первый Взбиватель Ордена">Первый Взбиватель Ордена</option>
+            </select>
+            <button class="investiture-submit-btn" id="btn-seal-diploma">
+              СВЯЩЕННАЯ ПЕЧАТЬ И ТОРЖЕСТВО
+            </button>
+          </form>
+
+          <div class="diploma-seal-preview">
+            <img src="/persimmon_seal.jpg" alt="Golden Seal of the Order" />
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM HUD (TIMELINE & TRACK CONTROLS) -->
+      <footer class="hud-bottom">
+        <div class="timeline-track-container" id="timeline-scrubber" title="Перемотка кодекса">
+          <div class="timeline-progress-bar" id="timeline-progress" style="width: 11%;"></div>
+        </div>
+
+        <div class="bottom-controls-row">
+          <div class="timecode-block">
+            <span id="timecode-display">12:43 / 20:26 AD</span>
+          </div>
+
+          <div class="nav-buttons-group">
+            <button class="arrow-nav-btn" id="btn-prev-chapter" title="Предыдущая глава [←]">◀</button>
+            
+            <div class="chapters-pills-list" id="chapters-nav-pills">
+              <!-- Dynamically populated via JS: PROLOGUS, I, II, III, IV, V, VI, VII, VIII -->
+            </div>
+
+            <button class="arrow-nav-btn" id="btn-next-chapter" title="Следующая глава [→]">▶</button>
+          </div>
+
+          <div class="keyboard-hints">
+            [ КЛАВИШИ: ← / → / ПРОБЕЛ / M ]
+          </div>
+        </div>
+      </footer>
+
+      <!-- SLIDING CODEX DRAWER (READ FULL MANUSCRIPT) -->
+      <aside class="codex-drawer" id="codex-drawer">
+        <div class="drawer-header">
+          <h3>ARCHIVUM SANCTI BLENDERII</h3>
+          <button class="drawer-close-btn" id="btn-close-drawer" title="Закрыть [ESC]">✕</button>
+        </div>
+        <div class="drawer-scroll-content">
+          <div class="manuscript-title-block">
+            <div class="manuscript-roman" id="drawer-roman">CAPITULUM I</div>
+            <h2 class="manuscript-chapter-name" id="drawer-title">Происхождение древней хурмовой гипотезы</h2>
+            <div class="manuscript-latin-subtitle" id="drawer-latin">Origo Theoriae Diospyri & Fructus Libido</div>
+          </div>
+
+          <div class="manuscript-quote-callout" id="drawer-quote">
+            «Комбинация перетёртой клетчатки и вяжущих танинов вызывает в мужском мозгу необратимые алхимические реакции».
+          </div>
+
+          <div class="illuminated-text" id="drawer-text">
+            <!-- Full manuscript chapter text -->
+          </div>
+
+          <table class="manuscript-metadata-table">
+            <tbody>
+              <tr>
+                <td>СТАТУС РЕЛИКВИИ</td>
+                <td id="drawer-relic-code">BLND-1243-X</td>
+              </tr>
+              <tr>
+                <td>УРОВЕНЬ ОПАСНОСТИ</td>
+                <td id="drawer-danger-level">Критический</td>
+              </tr>
+              <tr>
+                <td>ПОТЕРЯ ЧИСТОТЫ ДУХА</td>
+                <td id="drawer-purity-loss">100%</td>
+              </tr>
+              <tr>
+                <td>ГОД ХРОНИКИ</td>
+                <td id="drawer-year">1243 AD</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
