@@ -27,13 +27,29 @@ class AbbeyEditorialApp {
     this.analyser = null;
     this.dataArray = null;
 
+    // Loop config: intro (0.0s - 11.2s) plays once; loops from 11.2s to 51.9s
+    this.loopStart = 11.2;
+    this.loopEnd = 51.9;
+
     this.init();
   }
 
   init() {
     this.bindEvents();
     this.setupReadingProgress();
+    this.setupLoopMonitoring();
     this.setupAutoPlay();
+  }
+
+  setupLoopMonitoring() {
+    // Check with requestAnimationFrame for smooth zero-lag loop
+    const check = () => {
+      if (this.audio && !this.audio.paused && this.audio.currentTime >= this.loopEnd) {
+        this.audio.currentTime = this.loopStart;
+      }
+      requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
   }
 
   setupAudioContext() {
