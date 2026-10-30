@@ -3,209 +3,465 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Аббатство Святого Блендерия — Секретные архивы (1243–2026)</title>
-    <meta name="description" content="Интерактивный трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекреченные архивы Аббатства Святого Блендерия." />
+    <title>Секретные архивы Аббатства Святого Блендерия (1243–2026)</title>
+    <meta name="description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекречено в октябре 2026 года." />
     
-    <!-- OpenGraph / Social preview -->
-    <meta property="og:title" content="Аббатство Святого Блендерия — Секретные архивы" />
-    <meta property="og:description" content="Интерактивный аудиовизуальный кодекс в стиле Because Recollection: алхимия смузи, хурмовая гипотеза и посвящение в Великие Магистры." />
+    <!-- OpenGraph -->
+    <meta property="og:title" content="Секретные архивы Аббатства Святого Блендерия" />
+    <meta property="og:description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекреченные архивы ордена Фрутарианцев." />
     <meta property="og:image" content="/monk_persimmon.jpg" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="article" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="icon" type="image/jpeg" href="/persimmon_seal.jpg" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="app">
-      <!-- Fullscreen Audiovisual Canvas -->
-      <canvas id="stage-canvas"></canvas>
+    <!-- Hidden native audio element -->
+    <audio id="bg-audio" src="/masked_ball.mp3" preload="auto" loop></audio>
 
-      <!-- TOP HUD -->
-      <header class="hud-top">
-        <div class="brand-section" id="btn-brand-home" title="Вернуться к Прологу">
-          <img src="/persimmon_seal.jpg" alt="Abbey Seal" class="seal-icon" />
-          <div class="brand-text">
-            <h1>Sanctus Blenderius</h1>
-            <p>ARCHIVUM SECRETUM • MCCXLIII</p>
+    <!-- Reading Progress Bar at very top of screen -->
+    <div id="read-progress-bar"></div>
+
+    <!-- FLOATING SOUNDTRACK PLAYER BAR (Because-Recollection aesthetic) -->
+    <header class="player-dock" id="player-dock">
+      <div class="dock-container">
+        <!-- Left: Vinyl Icon & Track info -->
+        <div class="dock-left">
+          <div class="vinyl-disc-mini" id="vinyl-disc-mini" title="Включить / Пауза">
+            <img src="/persimmon_seal.jpg" alt="Vinyl Label" class="vinyl-img" />
+            <div class="vinyl-hole"></div>
+          </div>
+          <div class="track-meta">
+            <div class="track-title-row">
+              <span class="track-title">Jocelyn Pook — Masked Ball</span>
+              <span class="track-badge">EYES WIDE SHUT</span>
+            </div>
+            <div class="track-sub">Аббатство Святого Блендерия • Литургия 1243 г.</div>
           </div>
         </div>
 
-        <div class="center-tracker">
-          <span class="track-index-badge" id="hud-chapter-badge">TRACK 00 // PROLOGUS</span>
-          <h2 class="track-headline" id="hud-chapter-title">Врата Аббатства Святого Блендерия</h2>
-          <span class="track-latin-subtitle" id="hud-chapter-subtitle">Codex Blenderius — Introductio</span>
-        </div>
-
-        <div class="top-actions">
-          <button class="sound-toggle-btn" id="btn-sound-toggle" title="Включить / Выключить звук [M]">
-            <div class="equalizer-bars" id="eq-bars">
-              <span class="eq-bar" style="height: 6px;"></span>
-              <span class="eq-bar" style="height: 10px;"></span>
-              <span class="eq-bar" style="height: 4px;"></span>
-              <span class="eq-bar" style="height: 12px;"></span>
-              <span class="eq-bar" style="height: 8px;"></span>
-              <span class="eq-bar" style="height: 11px;"></span>
-              <span class="eq-bar" style="height: 5px;"></span>
-              <span class="eq-bar" style="height: 9px;"></span>
-            </div>
-            <span id="sound-label">SOUND: ON</span>
+        <!-- Center: Playback Controls & Waveform/Scrubber -->
+        <div class="dock-center">
+          <button class="play-btn" id="btn-play-toggle" aria-label="Play/Pause">
+            <svg id="icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <svg id="icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none;">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
           </button>
 
-          <div class="declassified-tag">
-            <span class="blinking-dot"></span>
-            <span>DECLASSIFIED 10/2026</span>
+          <!-- Audio time & scrubber -->
+          <div class="scrubber-wrapper">
+            <span class="time-label" id="time-current">00:00</span>
+            <div class="audio-scrub-track" id="audio-scrub-track">
+              <div class="audio-scrub-fill" id="audio-scrub-fill"></div>
+            </div>
+            <span class="time-label" id="time-duration">--:--</span>
           </div>
 
-          <button class="manuscript-open-btn" id="btn-open-drawer">
-            ЧИТАТЬ ТРАКТАТ
+          <!-- Live Animated Equalizer Bars -->
+          <div class="eq-bars-dock" id="eq-bars">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+        </div>
+
+        <!-- Right: Status / Volume -->
+        <div class="dock-right">
+          <div class="declassified-pill">
+            <span class="red-pulse-dot"></span>
+            <span>РАССЕКРЕЧЕНО • 10/2026</span>
+          </div>
+          <button class="vol-btn" id="btn-mute-toggle" title="Выключить/Включить звук">
+            <svg id="icon-vol-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg id="icon-vol-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
           </button>
         </div>
-      </header>
-
-      <!-- FLOATING INTERACTIVE ACTION HINT -->
-      <div class="interactive-prompt-pill" id="action-prompt">
-        <span class="prompt-icon">✦</span>
-        <span class="prompt-text" id="action-prompt-text">ВРАЩАЙТЕ И ЦАРАПАЙТЕ ДИСК / НАЖМИТЕ ДЛЯ СТАРТА</span>
       </div>
+    </header>
 
-      <!-- CHAPTER 7: INQUISITION DIAGNOSTIC PANEL MODAL -->
-      <div class="inquisition-panel-modal" id="inquisition-modal" style="display: none;">
-        <div class="inquisition-header">
-          <h3>INDEX PERVERSIONIS FRUCTUOSAE (1380 г.)</h3>
-          <p>Официальная инквизиционная шкала выявления тайных адептов смузи</p>
+    <!-- FLOATING CHAPTER NAV BAR (QUICK JUMP) -->
+    <nav class="sticky-chapter-nav" id="chapter-nav">
+      <div class="chapter-nav-inner">
+        <span class="nav-label">ГЛАВЫ:</span>
+        <a href="#prologue" class="nav-link active">Вступление</a>
+        <a href="#chapter-1" class="nav-link">I. Гипотеза</a>
+        <a href="#chapter-2" class="nav-link">II. Пустой блендер</a>
+        <a href="#chapter-3" class="nav-link">III. Manus Agitatoris</a>
+        <a href="#chapter-4" class="nav-link">IV. Культ сосуда</a>
+        <a href="#chapter-5" class="nav-link">V. Хурмовая копилка</a>
+        <a href="#chapter-6" class="nav-link">VI. Отдолбить в очко</a>
+        <a href="#chapter-7" class="nav-link">VII. Диагностика</a>
+        <a href="#chapter-8" class="nav-link">VIII. Вердикт</a>
+      </div>
+    </nav>
+
+    <!-- MAIN EDITORIAL CONTAINER -->
+    <main class="manuscript-page">
+      <!-- HERO HEADER SECTION -->
+      <section class="hero-section" id="prologue">
+        <div class="hero-top-classification">
+          <span class="classification-border"></span>
+          <span class="classification-text">АРХИВЫ ОРДЕНА ФРУТАРИАНЦЕВ • ДЕЛО № 1243-FRUCTUS • ГРИФ «ОСОБОЙ ВАЖНОСТИ»</span>
+          <span class="classification-border"></span>
         </div>
 
-        <div class="diagnostic-checklist" id="diagnostic-checklist-container">
-          <!-- Dynamically populated via JS -->
+        <div class="hero-main-header">
+          <div class="abbey-latin-motto">Archivum Secretum Abbatiae Sancti Blenderii</div>
+          <h1 class="hero-title">Секретные архивы Аббатства Святого Блендерия</h1>
+          <div class="hero-declassified-date">(Рассекречено: октябрь 2026 г.)</div>
+          
+          <div class="gold-flourish-divider">
+            <span class="flourish-line"></span>
+            <span class="flourish-cross">✤ ✦ ✤</span>
+            <span class="flourish-line"></span>
+          </div>
+
+          <h2 class="hero-treatise-subtitle">
+            Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока»
+          </h2>
         </div>
 
-        <div class="score-gauge-summary">
-          <div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--parchment-dim); margin-bottom: 4px;">
-              БАЛЛЫ ПОДОЗРИТЕЛЬНОСТИ:
+        <!-- Featured Artwork: The Alchemist Monk -->
+        <figure class="hero-art-frame">
+          <div class="art-glow"></div>
+          <img 
+            src="/monk_persimmon.jpg" 
+            alt="Монах-натурфилософ ордена Фрутарианцев с хурмой и пестом" 
+            class="hero-art-image" 
+          />
+          <figcaption class="art-caption">
+            <span class="caption-roman">Рис. 1.</span> Монах-натурфилософ ордена Фрутарианцев в крипте Аббатства Святого Блендерия, удерживающий плод дикой хурмы в алхимическом экстазе. (Холст, уголь, темпера, 1243 г. Собрание архивов Ватикана).
+          </figcaption>
+        </figure>
+
+        <!-- Audio Start Callout -->
+        <div class="audio-invitation-box" id="audio-invite-box">
+          <div class="invite-left">
+            <span class="invite-icon">🎧</span>
+            <div>
+              <strong>Аудиальное сопровождение трактата</strong>
+              <p>Для погружения в средневековую литургию включите саундтрек <em>Jocelyn Pook — Masked Ball</em></p>
             </div>
-            <div class="total-score-badge" id="total-score-value">85 / 260</div>
           </div>
-          <div class="inquisitor-stamp-box" id="inquisitor-stamp-container">
-            <div class="wax-verdict-stamp">HAERETICUS DETECTUS</div>
-          </div>
+          <button class="invite-play-btn" id="btn-invite-play">
+            ▶ ВКЛЮЧИТЬ САУНДТРЕК
+          </button>
         </div>
-      </div>
+      </section>
 
-      <!-- CHAPTER 8: INVESTITURE DIPLOMA MODAL -->
-      <div class="diploma-modal" id="diploma-modal" style="display: none;">
-        <div class="diploma-header">
-          <h2>ВЫСОЧАЙШАЯ ГРАМОТА ИНВЕСТИТУРЫ</h2>
-          <h4>Консилиум древних алхимиков и ордена Фрутарианцев</h4>
-        </div>
+      <!-- CHAPTER 1 -->
+      <article class="treatise-chapter" id="chapter-1">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM I • ANNO MCCXLIII</div>
+          <h3 class="chapter-title">Глава 1. Происхождение древней хурмовой гипотезы</h3>
+          <div class="chapter-latin">Origo Theoriae Diospyri & Fructus Libido</div>
+        </header>
 
-        <div class="diploma-body">
-          <p>
-            «Сим вердиктом подтверждается, что носитель сего документа преодолел рубеж 100 баллов плодового безумия и торжественно возводится в сан 
-            <strong>Великого Магистра Ордена Спелой Хурмы</strong>».
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            В 1243 году, задолго до изобретения электрических измельчителей, монахи-натурфилософы ордена Фрутарианцев обратили внимание на странную категорию мужчин. Эти одержимые часами перетирали ягоды и коренья в каменных ступках, чтобы получить густую жижу, попутно поглощая невероятные объемы дикой хурмы. Алхимики назвали этот недуг <em class="latin-term">Fructus Libido</em> (Плодовая похоть).
           </p>
 
-          <form class="investiture-form" id="investiture-form" onsubmit="event.preventDefault();">
-            <input 
-              type="text" 
-              class="investiture-input" 
-              id="magister-name-input" 
-              placeholder="Введите ваше имя или прозвище..." 
-              value="Брат Блендерий" 
+          <blockquote class="manuscript-quote">
+            «Вымышленная гипотеза того времени гласила: комбинация перетёртой клетчатки и вяжущих танинов вызывает в мужском мозгу необратимые алхимические реакции».
+          </blockquote>
+
+          <p>
+            Смузи, хурма и сексуальные фантазии сливались в единый порочный круг, где потребление напитка становилось триггером для формирования в сознании пациента совершенно абсурдных, навязчивых эротических образов, граничащих с клиническим безумием.
+          </p>
+        </div>
+      </article>
+
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 2 -->
+      <article class="treatise-chapter" id="chapter-2">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM II • VACUUM BLENDERUS</div>
+          <h3 class="chapter-title">Глава 2. Синдром пустого блендера и усиление сексуальных фантазий</h3>
+          <div class="chapter-latin">De Horrore Calicis Vacui & Deliriis Eroticis</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Главным симптомом этой древней хурмовой чумы являлась невозможность прожить без смузи ни дня. Как только субъект лишался доступа к своему густому фруктовому зелью, наступал <em class="latin-term">Vacuum Blenderus</em> (Ужас пустой чаши). В трактатах описывается, что в этот период абстиненции в голове больного начиналось неконтролируемое брожение мыслей.
+          </p>
+
+          <figure class="inline-art-frame">
+            <img 
+              src="/blender_relic.jpg" 
+              alt="Священный механический блендер-реликварий 1243 года" 
+              class="inline-art-image" 
             />
-            <select class="investiture-select" id="magister-title-select">
-              <option value="Великий магистр Спелой Хурмы">Великий магистр Спелой Хурмы</option>
-              <option value="Хранитель Анальной Сокровищницы">Хранитель Анальной Сокровищницы</option>
-              <option value="Архимандрит Пустой Чаши (Vacuum Blenderus)">Архимандрит Пустой Чаши (Vacuum Blenderus)</option>
-              <option value="Первый Взбиватель Ордена">Первый Взбиватель Ордена</option>
-            </select>
-            <button class="investiture-submit-btn" id="btn-seal-diploma">
-              СВЯЩЕННАЯ ПЕЧАТЬ И ТОРЖЕСТВО
-            </button>
-          </form>
+            <figcaption class="art-caption">
+              <span class="caption-roman">Рис. 2.</span> Механический измельчитель плодов с каменными зубчатыми передачами и кубком из алхимического стекла. Реликварий Аббатства.
+            </figcaption>
+          </figure>
 
-          <div class="diploma-seal-preview">
-            <img src="/persimmon_seal.jpg" alt="Golden Seal of the Order" />
+          <p>
+            Обычные предметы обихода начинали казаться ему эротическими объектами, а непристойные размышления о женщинах принимали маниакальный характер. Пациент представлял себе соитие с каждой встречной дояркой, наделяя процесс гиперболизированными, почти звериными чертами, где пот, фруктовые соки и телесные жидкости смешивались в единый дьявольский коктейль.
+          </p>
+        </div>
+      </article>
+
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 3 -->
+      <article class="treatise-chapter" id="chapter-3">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM III • MANUS AGITATORIS</div>
+          <h3 class="chapter-title">Глава 3. Дрочка и предполагаемый ритуал самоудовлетворения</h3>
+          <div class="chapter-latin">De Ritu Solitario & Mola Carnis</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Не в силах совладать с демонами <em class="latin-term">Vacuum Blenderus</em>, адепт перетертых фруктов переходил к следующей фазе. Дрочка и мастурбация описывались средневековыми учеными не просто как грех, а как вынужденный терапевтический ритуал.
+          </p>
+
+          <div class="ancient-scroll-callout">
+            <div class="scroll-author">Монах-летописец Бартоломей Безумный писал:</div>
+            <p class="scroll-quote">
+              «Ибо как жернова мельницы яростно перетирают зерно, так и муж, лишенный своего смузи, яростно натирает свой уд, пытаясь добыть из него хоть каплю густого нектара».
+            </p>
+          </div>
+
+          <p>
+            Этот процесс, названный <em class="latin-term">Manus Agitatoris</em> (Длань-взбиватель), мог длиться часами. Хронический смузиефил представлял себя механизмом, который должен перемолоть реальность в пюре, доводя мозоли на руках до состояния кровавых волдырей, но не получая духовного очищения.
+          </p>
+        </div>
+      </article>
+
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 4 -->
+      <article class="treatise-chapter" id="chapter-4">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM IV • VENERATIO PELVIS</div>
+          <h3 class="chapter-title">Глава 4. Культ женской пилотки и лизание пилотки как предмет псевдоисторических наблюдений</h3>
+          <div class="chapter-latin">De Phantasiis Labiorum & Vasculo Sacro</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Особое место в архивах занимает феноменологический анализ оральных пристрастий больных. Привычка к поглощению густых, вязких и влажных субстанций формировала в их сознании специфический эротический паттерн. Вылизка и лизание пилотки становились для них альфой и омегой интимного взаимодействия.
+          </p>
+
+          <blockquote class="manuscript-quote">
+            «Любитель смузи уже не воспринимал женщину как человека; для него она становилась священным сосудом. В его извращенном воображении этот процесс был сродни вылизыванию остатков мангового пюре со дна глубокой чаши».
+          </blockquote>
+
+          <p>
+            Они могли фантазировать об этом сутками, разрабатывая язык до такой степени, что, по легендам, могли расплетать им рыболовные сети.
+          </p>
+        </div>
+      </article>
+
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 5 -->
+      <article class="treatise-chapter" id="chapter-5">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM V • THESAURUS ANALIS DIOSPYROS</div>
+          <h3 class="chapter-title">Глава 5. Теория анальной хурмовой копилки</h3>
+          <div class="chapter-latin">De Semine Subterraneo & Arca Carnali</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Однако самым темным и непостижимым аспектом синдрома была связь с хурмой. Монахи задокументировали шокирующую практику, получившую название <em class="latin-term">Thesaurus Analis Diospyros</em> (Анальная сокровищница Диоспороса).
+          </p>
+
+          <p>
+            Согласно их безумной теории, избыток вяжущих веществ в организме вызывал у субъекта панический страх перед потерей семян. Это приводило к совершенно фантастическому ритуалу накопления: глубокое погружение семян хурмы в собственное очко.
+          </p>
+
+          <div class="marginal-note-box">
+            <span class="note-glyph">📜</span>
+            <div class="note-content">
+              <strong>Запись инквизитора (1348 г.):</strong> «Предполагалось, что пациент, подобно запасливой белке, методично проталкивал скользкие косточки в свою прямую кишку на зиму, свято веря, что там, в теплой и влажной тьме, прорастет Древо Познания, которое будет вечно плодоносить и давать ему ингредиенты для утренних напитков».
+            </div>
           </div>
         </div>
-      </div>
+      </article>
 
-      <!-- BOTTOM HUD (TIMELINE & TRACK CONTROLS) -->
-      <footer class="hud-bottom">
-        <div class="timeline-track-container" id="timeline-scrubber" title="Перемотка кодекса">
-          <div class="timeline-progress-bar" id="timeline-progress" style="width: 11%;"></div>
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 6 -->
+      <article class="treatise-chapter" id="chapter-6">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM VI • MALLEUS ET PULVERISATIO</div>
+          <h3 class="chapter-title">Глава 6. Фантазии о том, чтобы отдолбили в очко, и другие проявления безумия</h3>
+          <div class="chapter-latin">De Desiderio Percussionis & Furore Chthonico</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Именно этот процесс «анальной инкубации» приводил к финальной стадии деградации. Вяжущий эффект хурмы вызывал фантомное чувство пустоты в нижних чакрах. Древние псевдоучёные утверждали, что это чувство трансформировалось в ненасытное желание, чтобы отдолбили в очко.
+          </p>
+
+          <p>
+            Пациент начинал видеть в каждом крепком монастырском столбе, в каждом черенке от лопаты орудие своего спасения. Постоянное механическое давление на хурмовую копилку внутри рождало в их воспаленном сознании образы брутальных кузнецов и дровосеков, чьи ритмичные удары якобы должны были перемолоть сохраненные семена в идеальный анальный смузи.
+          </p>
         </div>
+      </article>
 
-        <div class="bottom-controls-row">
-          <div class="timecode-block">
-            <span id="timecode-display">12:43 / 20:26 AD</span>
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 7 -->
+      <article class="treatise-chapter" id="chapter-7">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM VII • INDEX PERVERSIONIS FRUCTUOSAE</div>
+          <h3 class="chapter-title">Глава 7. Диагностика патологии</h3>
+          <div class="chapter-latin">Scala Inquisitoria Anno Domini MCCCLXXX</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            В 1380 году инквизиторы составили <em class="latin-term">Index Perversionis Fructuosae</em> (Индекс фруктового извращения) — шкалу для выявления тайных адептов культа.
+          </p>
+
+          <!-- INQUISITOR'S OFFICIAL TABLE -->
+          <div class="table-scroll-wrapper">
+            <table class="medieval-inquisition-table">
+              <thead>
+                <tr>
+                  <th>Симптом / Поведение</th>
+                  <th>Баллы подозрительности</th>
+                  <th>Клиническое значение</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-symptom">Выпивает смузи раз в день</td>
+                  <td class="td-points">10</td>
+                  <td class="td-meaning">Ранняя стадия разложения разума</td>
+                </tr>
+                <tr>
+                  <td class="td-symptom">Ест хурму вместе с кожурой</td>
+                  <td class="td-points">25</td>
+                  <td class="td-meaning">Формирование хурмовой копилки</td>
+                </tr>
+                <tr>
+                  <td class="td-symptom">Шутит про блендеры и гениталии</td>
+                  <td class="td-points">50</td>
+                  <td class="td-meaning">Тяжелая форма <em>Vacuum Blenderus</em></td>
+                </tr>
+                <tr>
+                  <td class="td-symptom">Покупает шпинат и сельдерей</td>
+                  <td class="td-points">75</td>
+                  <td class="td-meaning">Скрытая подготовка к ритуалам</td>
+                </tr>
+                <tr class="tr-fatal">
+                  <td class="td-symptom">Называет семена "золотым запасом"</td>
+                  <td class="td-points">100</td>
+                  <td class="td-meaning">Полная одержимость содомией</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="nav-buttons-group">
-            <button class="arrow-nav-btn" id="btn-prev-chapter" title="Предыдущая глава [←]">◀</button>
-            
-            <div class="chapters-pills-list" id="chapters-nav-pills">
-              <!-- Dynamically populated via JS: PROLOGUS, I, II, III, IV, V, VI, VII, VIII -->
+          <div class="table-verdict-note">
+            <div class="wax-seal-badge">
+              <span class="wax-text">HAERETICUS DETECTUS</span>
+            </div>
+            <p>
+              Примечание трибунала: превышение суммы в 100 баллов влечет немедленное отлучение от ордена и препровождение в подвалы ручного помола.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <div class="section-separator"><span>§</span></div>
+
+      <!-- CHAPTER 8 -->
+      <article class="treatise-chapter" id="chapter-8">
+        <header class="chapter-header">
+          <div class="chapter-tag">CAPITULUM VIII • DECRETUM MAGISTRI</div>
+          <h3 class="chapter-title">Глава 8. Итоговый вердикт и посвящение</h3>
+          <div class="chapter-latin">Ordo Diospyri & Investitura Magna</div>
+        </header>
+
+        <div class="chapter-body">
+          <p class="dropcap-paragraph">
+            Рассекреченные архивы показывают, что средневековая наука не знала лекарства от этого состояния. Тех, кто набирал свыше 100 баллов, не сжигали на кострах. Их изолировали в специальных подвалах, оборудованных ручными жерновами и ящиками с перезрелыми фруктами.
+          </p>
+
+          <p>
+            Если вы, читая этот трактат, узнали в описанных симптомах свои утренние привычки, свою любовь к густым напиткам и свои странные мысли при виде оранжевых плодов, наука выносит свой окончательный вердикт.
+          </p>
+
+          <!-- CEREMONIAL DIPLOMA SCROLL -->
+          <div class="grand-master-scroll">
+            <div class="scroll-crest">
+              <img src="/persimmon_seal.jpg" alt="Печать Великого Магистра" class="seal-diploma-img" />
             </div>
 
-            <button class="arrow-nav-btn" id="btn-next-chapter" title="Следующая глава [→]">▶</button>
-          </div>
+            <h4 class="scroll-proclamation">РЕШЕНИЕМ ТАЙНОГО КОНСИЛИУМА</h4>
+            <div class="scroll-latin-decree">Ex Decreto Concilii Alchemistarum Antiquorum</div>
 
-          <div class="keyboard-hints">
-            [ КЛАВИШИ: ← / → / ПРОБЕЛ / M ]
+            <p class="scroll-main-verdict">
+              Решением тайного консилиума древних алхимиков и современных псевдоученых вам торжественно и безоговорочно присваивается высший и несмываемый титул:
+            </p>
+
+            <div class="scroll-title-gold">
+              ВЕЛИКИЙ МАГИСТР ОРДЕНА СПЕЛОЙ ХУРМЫ
+            </div>
+
+            <div class="scroll-blessing">
+              «Да пребудет с вами сила блендера, и да сохранят ваши внутренние закрома каждую косточку».
+            </div>
+
+            <div class="scroll-signatures">
+              <div class="sig-block">
+                <span class="sig-title">Бартоломей Безумный</span>
+                <span class="sig-role">Летописец Ордена</span>
+              </div>
+              <div class="sig-seal-mark">✠ MCCXLIII ✠</div>
+              <div class="sig-block">
+                <span class="sig-title">Фрутарий Великий</span>
+                <span class="sig-role">Архимандрит Пустой Чаши</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- FOOTER -->
+      <footer class="manuscript-footer">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <img src="/persimmon_seal.jpg" alt="Abbey Seal" class="footer-seal" />
+            <div>
+              <div class="footer-title">Аббатство Святого Блендерия</div>
+              <div class="footer-sub">Рассекречено: Октябрь 2026 г. • Департамент древних манускриптов</div>
+            </div>
+          </div>
+          <div class="footer-track-credit">
+            Саундтрек: <em>Jocelyn Pook — Masked Ball (Eyes Wide Shut)</em>
           </div>
         </div>
       </footer>
-
-      <!-- SLIDING CODEX DRAWER (READ FULL MANUSCRIPT) -->
-      <aside class="codex-drawer" id="codex-drawer">
-        <div class="drawer-header">
-          <h3>ARCHIVUM SANCTI BLENDERII</h3>
-          <button class="drawer-close-btn" id="btn-close-drawer" title="Закрыть [ESC]">✕</button>
-        </div>
-        <div class="drawer-scroll-content">
-          <div class="manuscript-title-block">
-            <div class="manuscript-roman" id="drawer-roman">CAPITULUM I</div>
-            <h2 class="manuscript-chapter-name" id="drawer-title">Происхождение древней хурмовой гипотезы</h2>
-            <div class="manuscript-latin-subtitle" id="drawer-latin">Origo Theoriae Diospyri & Fructus Libido</div>
-          </div>
-
-          <div class="manuscript-quote-callout" id="drawer-quote">
-            «Комбинация перетёртой клетчатки и вяжущих танинов вызывает в мужском мозгу необратимые алхимические реакции».
-          </div>
-
-          <div class="illuminated-text" id="drawer-text">
-            <!-- Full manuscript chapter text -->
-          </div>
-
-          <table class="manuscript-metadata-table">
-            <tbody>
-              <tr>
-                <td>СТАТУС РЕЛИКВИИ</td>
-                <td id="drawer-relic-code">BLND-1243-X</td>
-              </tr>
-              <tr>
-                <td>УРОВЕНЬ ОПАСНОСТИ</td>
-                <td id="drawer-danger-level">Критический</td>
-              </tr>
-              <tr>
-                <td>ПОТЕРЯ ЧИСТОТЫ ДУХА</td>
-                <td id="drawer-purity-loss">100%</td>
-              </tr>
-              <tr>
-                <td>ГОД ХРОНИКИ</td>
-                <td id="drawer-year">1243 AD</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </aside>
-    </div>
+    </main>
 
     <script type="module" src="/src/main.js"></script>
   </body>
