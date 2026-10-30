@@ -3,116 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Секретные архивы Аббатства Святого Блендерия (1243–2026)</title>
-    <meta name="description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекречено в октябре 2026 года." />
+    <title>Секретные архивы Аббатства Святого Блендерия</title>
+    <meta name="description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока»." />
     
     <!-- OpenGraph -->
     <meta property="og:title" content="Секретные архивы Аббатства Святого Блендерия" />
-    <meta property="og:description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока». Рассекреченные архивы ордена Фрутарианцев." />
+    <meta property="og:description" content="Трактат: «О природе перетёртых плодов и вяжущем семени, или Анатомия порока»." />
     <meta property="og:image" content="/monk_persimmon.jpg" />
     <meta property="og:type" content="article" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     
     <link rel="icon" type="image/jpeg" href="/persimmon_seal.jpg" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <!-- Hidden native audio element -->
+    <!-- Background Audio Element -->
     <audio id="bg-audio" src="/masked_ball.mp3" preload="auto" loop></audio>
 
-    <!-- Reading Progress Bar at very top of screen -->
+    <!-- Reading Progress Bar -->
     <div id="read-progress-bar"></div>
 
-    <!-- FLOATING SOUNDTRACK PLAYER BAR (Because-Recollection aesthetic) -->
-    <header class="player-dock" id="player-dock">
-      <div class="dock-container">
-        <!-- Left: Vinyl Icon & Track info -->
-        <div class="dock-left">
-          <div class="vinyl-disc-mini" id="vinyl-disc-mini" title="Включить / Пауза">
-            <img src="/persimmon_seal.jpg" alt="Vinyl Label" class="vinyl-img" />
-            <div class="vinyl-hole"></div>
-          </div>
-          <div class="track-meta">
-            <div class="track-title-row">
-              <span class="track-title">Jocelyn Pook — Masked Ball</span>
-              <span class="track-badge">EYES WIDE SHUT</span>
-            </div>
-            <div class="track-sub">Аббатство Святого Блендерия • Литургия 1243 г.</div>
-          </div>
+    <!-- MINIMAL FLOATING AUDIO CONTROLLER (TOP RIGHT) -->
+    <aside class="floating-audio-widget" id="audio-widget">
+      <div class="audio-widget-inner">
+        <!-- Spinning Vinyl Disc Button -->
+        <button class="widget-disc-btn" id="btn-vinyl-toggle" title="Включить / Приостановить музыку">
+          <img src="/persimmon_seal.jpg" alt="Seal Disc" class="widget-disc-img" />
+          <div class="widget-disc-hole"></div>
+        </button>
+
+        <!-- Play / Pause Icon Button -->
+        <button class="widget-play-btn" id="btn-play-toggle" title="Воспроизведение / Пауза">
+          <svg id="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <svg id="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none;">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+        </button>
+
+        <!-- Animated Mini Soundwave Bars -->
+        <div class="widget-wave" id="widget-wave">
+          <span class="w-bar"></span>
+          <span class="w-bar"></span>
+          <span class="w-bar"></span>
+          <span class="w-bar"></span>
+          <span class="w-bar"></span>
         </div>
 
-        <!-- Center: Playback Controls & Waveform/Scrubber -->
-        <div class="dock-center">
-          <button class="play-btn" id="btn-play-toggle" aria-label="Play/Pause">
-            <svg id="icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            <svg id="icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none;">
-              <rect x="6" y="4" width="4" height="16"></rect>
-              <rect x="14" y="4" width="4" height="16"></rect>
-            </svg>
-          </button>
-
-          <!-- Audio time & scrubber -->
-          <div class="scrubber-wrapper">
-            <span class="time-label" id="time-current">00:00</span>
-            <div class="audio-scrub-track" id="audio-scrub-track">
-              <div class="audio-scrub-fill" id="audio-scrub-fill"></div>
-            </div>
-            <span class="time-label" id="time-duration">--:--</span>
-          </div>
-
-          <!-- Live Animated Equalizer Bars -->
-          <div class="eq-bars-dock" id="eq-bars">
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-            <span class="eq-bar"></span>
-          </div>
-        </div>
-
-        <!-- Right: Status / Volume -->
-        <div class="dock-right">
-          <div class="declassified-pill">
-            <span class="red-pulse-dot"></span>
-            <span>РАССЕКРЕЧЕНО • 10/2026</span>
-          </div>
-          <button class="vol-btn" id="btn-mute-toggle" title="Выключить/Включить звук">
-            <svg id="icon-vol-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-            <svg id="icon-vol-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <line x1="23" y1="9" x2="17" y2="15"></line>
-              <line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
-          </button>
-        </div>
+        <!-- Mute / Unmute Button -->
+        <button class="widget-mute-btn" id="btn-mute-toggle" title="Звук: Вкл / Выкл">
+          <svg id="icon-vol-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="icon-vol-off" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
       </div>
-    </header>
-
-    <!-- FLOATING CHAPTER NAV BAR (QUICK JUMP) -->
-    <nav class="sticky-chapter-nav" id="chapter-nav">
-      <div class="chapter-nav-inner">
-        <span class="nav-label">ГЛАВЫ:</span>
-        <a href="#prologue" class="nav-link active">Вступление</a>
-        <a href="#chapter-1" class="nav-link">I. Гипотеза</a>
-        <a href="#chapter-2" class="nav-link">II. Пустой блендер</a>
-        <a href="#chapter-3" class="nav-link">III. Manus Agitatoris</a>
-        <a href="#chapter-4" class="nav-link">IV. Культ сосуда</a>
-        <a href="#chapter-5" class="nav-link">V. Хурмовая копилка</a>
-        <a href="#chapter-6" class="nav-link">VI. Отдолбить в очко</a>
-        <a href="#chapter-7" class="nav-link">VII. Диагностика</a>
-        <a href="#chapter-8" class="nav-link">VIII. Вердикт</a>
-      </div>
-    </nav>
+    </aside>
 
     <!-- MAIN EDITORIAL CONTAINER -->
     <main class="manuscript-page">
@@ -120,14 +77,13 @@
       <section class="hero-section" id="prologue">
         <div class="hero-top-classification">
           <span class="classification-border"></span>
-          <span class="classification-text">АРХИВЫ ОРДЕНА ФРУТАРИАНЦЕВ • ДЕЛО № 1243-FRUCTUS • ГРИФ «ОСОБОЙ ВАЖНОСТИ»</span>
+          <span class="classification-text">АРХИВЫ ОРДЕНА ФРУТАРИАНЦЕВ • MCCXLIII</span>
           <span class="classification-border"></span>
         </div>
 
         <div class="hero-main-header">
           <div class="abbey-latin-motto">Archivum Secretum Abbatiae Sancti Blenderii</div>
           <h1 class="hero-title">Секретные архивы Аббатства Святого Блендерия</h1>
-          <div class="hero-declassified-date">(Рассекречено: октябрь 2026 г.)</div>
           
           <div class="gold-flourish-divider">
             <span class="flourish-line"></span>
@@ -142,30 +98,15 @@
 
         <!-- Featured Artwork: The Alchemist Monk -->
         <figure class="hero-art-frame">
-          <div class="art-glow"></div>
           <img 
             src="/monk_persimmon.jpg" 
             alt="Монах-натурфилософ ордена Фрутарианцев с хурмой и пестом" 
             class="hero-art-image" 
           />
           <figcaption class="art-caption">
-            <span class="caption-roman">Рис. 1.</span> Монах-натурфилософ ордена Фрутарианцев в крипте Аббатства Святого Блендерия, удерживающий плод дикой хурмы в алхимическом экстазе. (Холст, уголь, темпера, 1243 г. Собрание архивов Ватикана).
+            <span class="caption-roman">Рис. 1.</span> Монах-натурфилософ ордена Фрутарианцев в крипте Аббатства Святого Блендерия, удерживающий плод дикой хурмы в алхимическом экстазе. (Холст, уголь, темпера, 1243 г. Собрание архивов).
           </figcaption>
         </figure>
-
-        <!-- Audio Start Callout -->
-        <div class="audio-invitation-box" id="audio-invite-box">
-          <div class="invite-left">
-            <span class="invite-icon">🎧</span>
-            <div>
-              <strong>Аудиальное сопровождение трактата</strong>
-              <p>Для погружения в средневековую литургию включите саундтрек <em>Jocelyn Pook — Masked Ball</em></p>
-            </div>
-          </div>
-          <button class="invite-play-btn" id="btn-invite-play">
-            ▶ ВКЛЮЧИТЬ САУНДТРЕК
-          </button>
-        </div>
       </section>
 
       <!-- CHAPTER 1 -->
@@ -446,18 +387,15 @@
         </div>
       </article>
 
-      <!-- FOOTER -->
+      <!-- FOOTER (Cleaned up, no track text) -->
       <footer class="manuscript-footer">
         <div class="footer-inner">
           <div class="footer-brand">
             <img src="/persimmon_seal.jpg" alt="Abbey Seal" class="footer-seal" />
             <div>
               <div class="footer-title">Аббатство Святого Блендерия</div>
-              <div class="footer-sub">Рассекречено: Октябрь 2026 г. • Департамент древних манускриптов</div>
+              <div class="footer-sub">Департамент древних манускриптов ордена Фрутарианцев (1243 г.)</div>
             </div>
-          </div>
-          <div class="footer-track-credit">
-            Саундтрек: <em>Jocelyn Pook — Masked Ball (Eyes Wide Shut)</em>
           </div>
         </div>
       </footer>

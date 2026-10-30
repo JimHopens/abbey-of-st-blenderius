@@ -1,5 +1,5 @@
-/* Abbey of St. Blenderius — Dark Editorial Luxury & Because-Recollection Aesthetic */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Abbey of St. Blenderius — Clean Editorial Luxury & Compact Floating Audio */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap');
 
 :root {
   --bg-deep: #0a0b0e;
@@ -10,8 +10,6 @@
   --gold-muted: rgba(200, 157, 66, 0.35);
   --persimmon: #e65100;
   --persimmon-bright: #ff6d00;
-  --persimmon-soft: rgba(230, 81, 0, 0.15);
-  --crimson: #a81c1c;
   --parchment: #eae5d9;
   --parchment-dim: #a49f93;
   --border-light: rgba(200, 157, 66, 0.2);
@@ -66,43 +64,37 @@ body::after {
 }
 
 /* ===================================================
-   FLOATING SOUNDTRACK PLAYER DOCK
+   SLEEK FLOATING AUDIO CONTROLLER (TOP RIGHT)
 =================================================== */
-.player-dock {
+.floating-audio-widget {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 70px;
-  background: rgba(10, 11, 14, 0.92);
+  top: 24px;
+  right: 28px;
+  z-index: 950;
+  background: rgba(14, 16, 21, 0.88);
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  padding: 6px 14px 6px 8px;
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-light);
-  z-index: 900;
-  display: flex;
-  align-items: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  transition: all 0.25s ease;
 }
 
-.dock-container {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+.floating-audio-widget:hover {
+  border-color: var(--gold);
+  box-shadow: 0 8px 35px rgba(200, 157, 66, 0.3);
 }
 
-/* Left: Vinyl & Info */
-.dock-left {
+.audio-widget-inner {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
-.vinyl-disc-mini {
-  width: 44px;
-  height: 44px;
+/* Spinning Vinyl Button */
+.widget-disc-btn {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #15161c;
   border: 1.5px solid var(--gold);
@@ -111,33 +103,29 @@ body::after {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  padding: 0;
   flex-shrink: 0;
-  transition: transform 0.3s;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0,0,0,0.8);
 }
 
-.vinyl-disc-mini:hover {
-  transform: scale(1.06);
-}
-
-.vinyl-img {
+.widget-disc-img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.vinyl-hole {
+.widget-disc-hole {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background: #0a0b0e;
   border: 1px solid var(--gold);
   border-radius: 50%;
 }
 
-/* Vinyl rotation animation when playing */
-.vinyl-disc-mini.playing {
+.widget-disc-btn.playing {
   animation: spinVinyl 6s linear infinite;
 }
 
@@ -146,116 +134,38 @@ body::after {
   to { transform: rotate(360deg); }
 }
 
-.track-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.track-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.track-title {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  color: #fff;
-  letter-spacing: 0.5px;
-}
-
-.track-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  color: var(--persimmon);
-  border: 1px solid rgba(230, 81, 0, 0.4);
-  padding: 1px 5px;
-  border-radius: 3px;
-  letter-spacing: 1px;
-}
-
-.track-sub {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 13px;
-  color: var(--parchment-dim);
-}
-
-/* Center: Controls & Scrubber */
-.dock-center {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
-  max-width: 520px;
-}
-
-.play-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+/* Play/Pause Button */
+.widget-play-btn {
   background: var(--gold);
   border: none;
   color: #0a0b0e;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  flex-shrink: 0;
+  outline: none;
   transition: all 0.2s;
-  box-shadow: 0 0 12px rgba(200, 157, 66, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 157, 66, 0.3);
 }
 
-.play-btn:hover {
+.widget-play-btn:hover {
   background: var(--gold-glow);
-  transform: scale(1.06);
-  box-shadow: 0 0 18px rgba(200, 157, 66, 0.6);
+  transform: scale(1.08);
 }
 
-.scrubber-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-.time-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--parchment-dim);
-  width: 38px;
-}
-
-.audio-scrub-track {
-  flex: 1;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
-}
-
-.audio-scrub-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold), var(--persimmon));
-  border-radius: 2px;
-}
-
-/* Equalizer */
-.eq-bars-dock {
+/* Waveform Bars */
+.widget-wave {
   display: flex;
   align-items: flex-end;
-  gap: 2px;
-  height: 16px;
-  width: 24px;
+  gap: 2.5px;
+  height: 15px;
+  width: 22px;
 }
 
-.eq-bar {
+.w-bar {
   width: 2px;
   height: 3px;
   background: var(--gold);
@@ -263,117 +173,22 @@ body::after {
   transition: height 0.08s ease;
 }
 
-/* Right */
-.dock-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.declassified-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: #ff5252;
-  background: rgba(255, 23, 68, 0.1);
-  border: 1px solid rgba(255, 23, 68, 0.35);
-  padding: 4px 10px;
-  border-radius: 4px;
-  letter-spacing: 1px;
-}
-
-.red-pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ff1744;
-  animation: pulseDot 1.4s infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(0.8); }
-}
-
-.vol-btn {
+/* Mute Toggle Button */
+.widget-mute-btn {
   background: transparent;
-  border: 1px solid var(--border-light);
+  border: none;
   color: var(--parchment-dim);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  padding: 4px;
+  outline: none;
+  transition: color 0.2s;
 }
 
-.vol-btn:hover {
-  border-color: var(--gold);
+.widget-mute-btn:hover {
   color: #fff;
-}
-
-/* ===================================================
-   STICKY CHAPTER JUMP NAV
-=================================================== */
-.sticky-chapter-nav {
-  position: sticky;
-  top: 70px;
-  left: 0;
-  right: 0;
-  background: rgba(14, 16, 21, 0.95);
-  border-bottom: 1px solid rgba(200, 157, 66, 0.15);
-  z-index: 850;
-  backdrop-filter: blur(10px);
-}
-
-.chapter-nav-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 8px 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.chapter-nav-inner::-webkit-scrollbar {
-  height: 2px;
-}
-
-.nav-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--gold);
-  letter-spacing: 1.5px;
-  margin-right: 6px;
-}
-
-.nav-link {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
-  color: var(--parchment-dim);
-  text-decoration: none;
-  padding: 5px 12px;
-  border-radius: 16px;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-}
-
-.nav-link:hover {
-  color: #fff;
-  border-color: var(--gold-muted);
-}
-
-.nav-link.active {
-  color: #0a0b0e;
-  background: var(--gold);
-  font-weight: 600;
-  border-color: var(--gold-glow);
 }
 
 /* ===================================================
@@ -381,7 +196,7 @@ body::after {
 =================================================== */
 .manuscript-page {
   max-width: var(--content-max-width);
-  margin: 120px auto 140px auto;
+  margin: 70px auto 120px auto;
   padding: 0 24px;
 }
 
@@ -429,14 +244,6 @@ body::after {
   letter-spacing: 1px;
   margin-bottom: 8px;
   text-shadow: 0 0 30px rgba(200, 157, 66, 0.2);
-}
-
-.hero-declassified-date {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: #ff5252;
-  letter-spacing: 2px;
-  margin-bottom: 24px;
 }
 
 .gold-flourish-divider {
@@ -504,72 +311,12 @@ body::after {
   font-weight: 700;
 }
 
-/* Audio invitation banner */
-.audio-invitation-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  background: linear-gradient(135deg, rgba(200, 157, 66, 0.08), rgba(230, 81, 0, 0.05));
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-  padding: 16px 24px;
-  text-align: left;
-  margin: 30px auto;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
-
-.invite-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.invite-icon {
-  font-size: 28px;
-}
-
-.invite-left strong {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 14px;
-  color: #fff;
-  display: block;
-  margin-bottom: 2px;
-}
-
-.invite-left p {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px;
-  color: var(--parchment);
-}
-
-.invite-play-btn {
-  background: var(--gold);
-  border: none;
-  color: #0a0b0e;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 1px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(200, 157, 66, 0.4);
-}
-
-.invite-play-btn:hover {
-  background: var(--gold-glow);
-  transform: translateY(-1px);
-}
-
 /* ===================================================
    CHAPTERS ARTICLE STYLING
 =================================================== */
 .treatise-chapter {
-  margin-bottom: 70px;
-  padding-top: 30px;
+  margin-bottom: 60px;
+  padding-top: 20px;
 }
 
 .chapter-header {
@@ -955,9 +702,8 @@ body::after {
 .footer-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
+  justify-content: center;
+  text-align: center;
 }
 
 .footer-brand {
@@ -986,30 +732,14 @@ body::after {
   color: var(--parchment-dim);
 }
 
-.footer-track-credit {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px;
-  color: var(--parchment-dim);
-}
-
-.footer-track-credit em {
-  color: var(--gold);
-}
-
 /* ===================================================
    RESPONSIVE DESIGN
 =================================================== */
 @media (max-width: 800px) {
-  .player-dock {
-    height: auto;
-    padding: 10px 0;
-  }
-  .dock-container {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .dock-center {
-    width: 100%;
+  .floating-audio-widget {
+    top: 14px;
+    right: 14px;
+    padding: 5px 10px;
   }
   .hero-title {
     font-size: 28px;
@@ -1022,10 +752,6 @@ body::after {
   }
   .chapter-body {
     font-size: 19px;
-  }
-  .audio-invitation-box {
-    flex-direction: column;
-    text-align: center;
   }
   .scroll-signatures {
     flex-direction: column;
