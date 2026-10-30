@@ -27,9 +27,12 @@ class AbbeyEditorialApp {
     this.analyser = null;
     this.dataArray = null;
 
-    // Loop config: intro (0.0s - 11.2s) plays once; loops from 11.2s to 51.9s
-    this.loopStart = 11.2;
-    this.loopEnd = 51.9;
+    // DJ Master Mix Loop Points:
+    // Intro (0.0s - 11.28s) plays once.
+    // Master track contains 3 seamlessly crossfaded 16-bar cycles up to 136.35s.
+    // At 136.35s it loops back to 11.28s (downbeat of bar 1).
+    this.loopStart = 11.2815;
+    this.loopEnd = 136.35;
 
     this.init();
   }
