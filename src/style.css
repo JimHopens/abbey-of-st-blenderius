@@ -274,6 +274,18 @@ body::after {
   transition: height 0.08s ease;
 }
 
+/* GPU-accelerated smooth wave animation when playing (zero CPU overhead on iPhone) */
+.widget-wave.playing .w-bar:nth-child(1) { animation: wavePulse 0.9s ease-in-out infinite alternate; }
+.widget-wave.playing .w-bar:nth-child(2) { animation: wavePulse 0.7s ease-in-out 0.2s infinite alternate; }
+.widget-wave.playing .w-bar:nth-child(3) { animation: wavePulse 1.1s ease-in-out 0.4s infinite alternate; }
+.widget-wave.playing .w-bar:nth-child(4) { animation: wavePulse 0.8s ease-in-out 0.1s infinite alternate; }
+.widget-wave.playing .w-bar:nth-child(5) { animation: wavePulse 1.0s ease-in-out 0.3s infinite alternate; }
+
+@keyframes wavePulse {
+  0% { height: 3px; }
+  100% { height: 14px; }
+}
+
 /* Mute Toggle Button */
 .widget-mute-btn {
   background: transparent;
@@ -837,6 +849,10 @@ body::after {
    RESPONSIVE DESIGN
 =================================================== */
 @media (max-width: 800px) {
+  /* Disable heavy SVG fractal noise filter on mobile for smooth 120Hz scrolling */
+  body::after {
+    display: none;
+  }
   .floating-audio-widget {
     top: 14px;
     right: 14px;
