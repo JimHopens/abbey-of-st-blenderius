@@ -5,6 +5,10 @@ class AbbeyEditorialApp {
     this.isPlaying = false;
     this.isMuted = false;
 
+    // Entry Curtain
+    this.curtain = document.getElementById("entry-curtain");
+    this.btnEnter = document.getElementById("btn-enter-abbey");
+
     // Widget Elements
     this.btnPlay = document.getElementById("btn-play-toggle");
     this.btnVinyl = document.getElementById("btn-vinyl-toggle");
@@ -70,51 +74,50 @@ class AbbeyEditorialApp {
     requestAnimationFrame(update);
   }
 
-  setupAutoPlay() {
-    // 1. Try immediate autoplay
-    const tryPlay = () => {
-      this.setupAudioContext();
-      if (this.audioContext && this.audioContext.state === "suspended") {
-        this.audioContext.resume();
-      }
-
-      this.audio.play().then(() => {
-        this.isPlaying = true;
-        this.updatePlayerUI();
-      }).catch(() => {
-        // Autoplay policy prevented immediate play.
-        // Fallback: Start immediately on first user touch/scroll/click
-        const startOnGesture = () => {
-          this.setupAudioContext();
-          if (this.audioContext && this.audioContext.state === "suspended") {
-            this.audioContext.resume();
-          }
-          this.audio.play().then(() => {
-            this.isPlaying = true;
-            this.updatePlayerUI();
-          }).catch(() => {});
-
-          window.removeEventListener("pointerdown", startOnGesture);
-          window.removeEventListener("scroll", startOnGesture);
-          window.removeEventListener("touchstart", startOnGesture);
-          window.removeEventListener("keydown", startOnGesture);
-          window.removeEventListener("wheel", startOnGesture);
-        };
-
-        window.addEventListener("pointerdown", startOnGesture, { once: true, passive: true });
-        window.addEventListener("scroll", startOnGesture, { once: true, passive: true });
-        window.addEventListener("touchstart", startOnGesture, { once: true, passive: true });
-        window.addEventListener("keydown", startOnGesture, { once: true, passive: true });
-        window.addEventListener("wheel", startOnGesture, { once: true, passive: true });
-      });
-    };
-
-    // Execute when ready
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      tryPlay();
-    } else {
-      window.addEventListener("DOMContentLoaded", tryPlay);
+  hideCurtain() {
+    if (this.curtain) {
+      this.curtain.classList.add("hidden");
     }
+  }
+
+  startMusic() {
+    this.setupAudioContext();
+    if (this.audioContext && this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      this.updatePlayerUI();
+      this.hideCurtain();
+    }).catch(err => {
+      console.warn("Audio playback waiting for user action:", err);
+    });
+  }
+
+  setupAutoPlay() {
+    // 1. Try immediate unmuted play on page load
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      this.updatePlayerUI();
+      this.hideCurtain();
+      this.setupAudioContext();
+    }).catch(() => {
+      // Browser blocked unmuted autoplay.
+      // Set up click/tap listeners to start immediately upon ANY user action
+      const handleUserGesture = () => {
+        this.startMusic();
+        window.removeEventListener("click", handleUserGesture, true);
+        window.removeEventListener("pointerdown", handleUserGesture, true);
+        window.removeEventListener("touchstart", handleUserGesture, true);
+        window.removeEventListener("keydown", handleUserGesture, true);
+      };
+
+      window.addEventListener("click", handleUserGesture, true);
+      window.addEventListener("pointerdown", handleUserGesture, true);
+      window.addEventListener("touchstart", handleUserGesture, true);
+      window.addEventListener("keydown", handleUserGesture, true);
+    });
   }
 
   togglePlay() {
@@ -160,9 +163,34 @@ class AbbeyEditorialApp {
   }
 
   bindEvents() {
-    this.btnPlay.addEventListener("click", () => this.togglePlay());
-    this.btnVinyl.addEventListener("click", () => this.togglePlay());
-    this.btnMute.addEventListener("click", () => this.toggleMute());
+    // Curtain click
+    if (this.curtain) {
+      this.curtain.addEventListener("click", () => this.startMusic());
+    }
+    if (this.btnEnter) {
+      this.btnEnter.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.startMusic();
+      });
+    }
+
+    // Play/Pause button
+    this.btnPlay.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.togglePlay();
+    });
+
+    // Vinyl click
+    this.btnVinyl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.togglePlay();
+    });
+
+    // Mute button
+    this.btnMute.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.toggleMute();
+    });
 
     // Spacebar to toggle
     window.addEventListener("keydown", (e) => {

@@ -24,6 +24,21 @@
     <!-- Background Audio Element -->
     <audio id="bg-audio" src="/masked_ball.mp3" preload="auto" loop></audio>
 
+    <!-- CINEMATIC ENTRY CURTAIN (Solves browser autoplay policy 100% reliably) -->
+    <div class="entry-curtain" id="entry-curtain">
+      <div class="entry-card">
+        <div class="entry-seal-box">
+          <img src="/persimmon_seal.jpg" alt="Abbey Seal" class="entry-seal-img" />
+        </div>
+        <div class="entry-sub">ARCHIVUM SECRETUM • MCCXLIII</div>
+        <h2 class="entry-title">Аббатство Святого Блендерия</h2>
+        <p class="entry-quote">«О природе перетёртых плодов и вяжущем семени»</p>
+        <button class="entry-btn" id="btn-enter-abbey">
+          НАЖМИТЕ ДЛЯ ВХОДА В АРХИВ
+        </button>
+      </div>
+    </div>
+
     <!-- Reading Progress Bar -->
     <div id="read-progress-bar"></div>
 
@@ -387,7 +402,7 @@
         </div>
       </article>
 
-      <!-- FOOTER (Cleaned up, no track text) -->
+      <!-- FOOTER -->
       <footer class="manuscript-footer">
         <div class="footer-inner">
           <div class="footer-brand">
